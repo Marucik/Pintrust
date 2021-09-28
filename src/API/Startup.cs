@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using API.Domain.Interfaces;
+using API.Helpers;
 using API.Repositories;
+using API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -29,14 +32,7 @@ namespace API
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-      services.AddCors(options =>
-      {
-        options.AddDefaultPolicy(
-              builder =>
-              {
-                builder.WithOrigins("http://localhost:3000");
-              });
-      });
+      services.AddCors();
       services.AddControllers();
       services.AddRouting(x => x.LowercaseUrls = true);
       services.AddSwaggerGen(c =>
@@ -44,6 +40,7 @@ namespace API
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
       });
       services.AddMongoDb();
+      services.AddScoped<IAuthenticateService, AuthenticateService>();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,9 +63,14 @@ namespace API
 
       app.UseRouting();
 
-      app.UseCors();
+      app.UseCors(x => x
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
 
-      app.UseAuthorization();
+      // app.UseAuthorization();
+
+      app.UseMiddleware<JwtMiddleware>();
 
       app.UseEndpoints(endpoints =>
       {

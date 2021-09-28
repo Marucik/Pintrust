@@ -13,20 +13,20 @@ using Microsoft.Extensions.Logging;
 namespace API.Controllers
 {
   [ApiController]
-  [Route("api/[controller]")]
-  public class ProductController : ControllerBase
+  [Route("[controller]")]
+  public class PostController : ControllerBase
   {
-    private readonly ILogger<ProductController> _logger;
+    private readonly ILogger<PostController> _logger;
     private readonly IPostRepository _postRepository;
 
-    public ProductController(ILogger<ProductController> logger, IPostRepository postRepository)
+    public PostController(ILogger<PostController> logger, IPostRepository postRepository)
     {
       _logger = logger;
       _postRepository = postRepository;
     }
 
     [HttpGet]
-    public async Task<IEnumerable<Post>> GetAllProducts()
+    public async Task<IEnumerable<Post>> GetAllPosts()
     {
       return await _postRepository.GetAllAsync();
     }
@@ -34,19 +34,24 @@ namespace API.Controllers
     [HttpPost]
     [Consumes("multipart/form-data")]
 
-    public async Task<IActionResult> PostProduct([FromForm] NewPostDto entity, IFormFile image)
+    public async Task<IActionResult> CreatePost([FromForm] NewPostDto entity, IFormFile image)
     {
+
       try
       {
+        var user = (User)Request.HttpContext.Items["User"];
+        // Request.Headers.TryGetValue("Authentication", out var AuthenticationHeader);
+        if (user == null) return Unauthorized();
+
         var imageUrl = await image.SaveFileAndGetUrl();
-        var post = new Post(entity, imageUrl);
+        var post = new Post(entity, imageUrl, user);
         await _postRepository.InsertAsync(post);
       }
-      catch (System.Exception)
+      catch (Exception)
       {
-
         throw;
       }
+
 
       return Ok();
     }
