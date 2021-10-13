@@ -5,17 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using API.Repositories;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Helpers
 {
+
   public class JwtMiddleware
   {
     private readonly RequestDelegate _next;
+    private readonly ILogger<JwtMiddleware> _logger;
 
-    public JwtMiddleware(RequestDelegate next)
+    public JwtMiddleware(RequestDelegate next, ILogger<JwtMiddleware> logger)
     {
       _next = next;
+      _logger = logger;
     }
 
     public async Task Invoke(HttpContext context, IUserRepository userRepository)
@@ -40,6 +44,7 @@ namespace API.Helpers
           IssuerSigningKey = new SymmetricSecurityKey(key),
           ValidateIssuer = false,
           ValidateAudience = false,
+
           // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
           ClockSkew = TimeSpan.Zero
         }, out SecurityToken validatedToken);
@@ -48,7 +53,10 @@ namespace API.Helpers
         var userId = jwtToken.Claims.First(x => x.Type == "id").Value;
 
         // attach user to context on successful jwt validation
-        context.Items["User"] = await userRepository.GetById(Guid.Parse(userId));
+        var authenticatedUser = await userRepository.GetById(Guid.Parse(userId));
+        _logger.LogInformation(authenticatedUser.Id.ToString());
+
+        context.Items["User"] = authenticatedUser;
       }
       catch
       {

@@ -10,7 +10,7 @@ namespace API.Domain
     public Guid Id { get; set; }
     public string Login { get; set; }
     public string Password { get; set; }
-    public IEnumerable<Guid> Favourites { get; set; }
+    public List<Guid> Favourites { get; set; }
 
     public User(NewUserDto entity)
     {

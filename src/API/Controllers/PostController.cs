@@ -18,11 +18,13 @@ namespace API.Controllers
   {
     private readonly ILogger<PostController> _logger;
     private readonly IPostRepository _postRepository;
+    private readonly IUserRepository _userRepository;
 
-    public PostController(ILogger<PostController> logger, IPostRepository postRepository)
+    public PostController(ILogger<PostController> logger, IPostRepository postRepository, IUserRepository userRepository)
     {
       _logger = logger;
       _postRepository = postRepository;
+      _userRepository = userRepository;
     }
 
     [HttpGet]
@@ -33,14 +35,11 @@ namespace API.Controllers
 
     [HttpPost]
     [Consumes("multipart/form-data")]
-
     public async Task<IActionResult> CreatePost([FromForm] NewPostDto entity, IFormFile image)
     {
-
       try
       {
         var user = (User)Request.HttpContext.Items["User"];
-        // Request.Headers.TryGetValue("Authentication", out var AuthenticationHeader);
         if (user == null) return Unauthorized();
 
         var imageUrl = await image.SaveFileAndGetUrl();
@@ -52,6 +51,24 @@ namespace API.Controllers
         throw;
       }
 
+      return Ok();
+    }
+
+    [HttpPost("{postId}/favourite")]
+    public async Task<IActionResult> AddFavourite(Guid postId)
+    {
+      try
+      {
+        var user = (User)Request.HttpContext.Items["User"];
+        if (user == null) return Unauthorized();
+
+        await _userRepository.AddFavourite(user, postId);
+
+      }
+      catch (Exception)
+      {
+        throw;
+      }
 
       return Ok();
     }

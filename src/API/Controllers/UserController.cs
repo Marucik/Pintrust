@@ -32,7 +32,7 @@ namespace API.Controllers
       return Ok();
     }
 
-    [HttpPost("authenticate")]
+    [HttpPost("sign-in")]
     public async Task<IActionResult> Authenticate(AuthenticateRequest model)
     {
       var response = await _authenticateService.Authenticate(model);

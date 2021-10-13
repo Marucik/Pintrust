@@ -68,7 +68,7 @@ namespace API
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 
-      // app.UseAuthorization();
+      app.UseAuthorization();
 
       app.UseMiddleware<JwtMiddleware>();
 

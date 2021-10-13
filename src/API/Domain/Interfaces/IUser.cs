@@ -8,6 +8,6 @@ namespace API.Domain.Interfaces
     Guid Id { get; set; }
     string Login { get; set; }
     string Password { get; set; }
-    IEnumerable<Guid> Favourites { get; set; }
+    List<Guid> Favourites { get; set; }
   }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using API.Domain;
 using API.Domain.Interfaces;
 using API.Repositories;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 namespace API.Services
@@ -13,10 +14,12 @@ namespace API.Services
   public class AuthenticateService : IAuthenticateService
   {
     private readonly IUserRepository _userRepository;
+    private readonly ILogger<AuthenticateService> _logger;
 
-    public AuthenticateService(IUserRepository userRepository)
+    public AuthenticateService(IUserRepository userRepository, ILogger<AuthenticateService> logger)
     {
       _userRepository = userRepository;
+      _logger = logger;
     }
 
     public async Task<AuthenticateResponse> Authenticate(AuthenticateRequest request)
@@ -34,12 +37,14 @@ namespace API.Services
 
     private string generateJwtToken(User user)
     {
+      var userId = user.Id;
+
       // generate token that is valid for 7 days
       var tokenHandler = new JwtSecurityTokenHandler();
       var key = Encoding.ASCII.GetBytes("D117A25C-4895-428A-8EC0-221A93AFB653");
       var tokenDescriptor = new SecurityTokenDescriptor
       {
-        Subject = new ClaimsIdentity(new[] { new Claim("id", user.Id.ToString()) }),
+        Subject = new ClaimsIdentity(new[] { new Claim("id", userId.ToString()) }),
         Expires = DateTime.UtcNow.AddDays(7),
         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
       };

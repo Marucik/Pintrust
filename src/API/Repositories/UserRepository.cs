@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Domain;
 using API.Mongo;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 
@@ -33,6 +34,17 @@ namespace API.Repositories
     public async Task<User> GetById(Guid id)
     {
       return await _collection.AsQueryable().Where(x => x.Id == id).FirstAsync();
+    }
+
+    public async Task AddFavourite(User user, Guid postId)
+    {
+      var favourites = user.Favourites;
+      favourites.Add(postId);
+
+      var filter = Builders<User>.Filter.Eq("_id", user.Id);
+      var update = Builders<User>.Update.Set("Favourites", favourites);
+
+      await _collection.UpdateOneAsync(filter, update);
     }
   }
 }
