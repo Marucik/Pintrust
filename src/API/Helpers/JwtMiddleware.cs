@@ -32,7 +32,7 @@ namespace API.Helpers
       await _next(context);
     }
 
-    private async void attachUserToContext(HttpContext context, IUserRepository userRepository, string token)
+    private void attachUserToContext(HttpContext context, IUserRepository userRepository, string token)
     {
       try
       {
@@ -52,11 +52,7 @@ namespace API.Helpers
         var jwtToken = (JwtSecurityToken)validatedToken;
         var userId = jwtToken.Claims.First(x => x.Type == "id").Value;
 
-        // attach user to context on successful jwt validation
-        var authenticatedUser = await userRepository.GetById(Guid.Parse(userId));
-        _logger.LogInformation(authenticatedUser.Id.ToString());
-
-        context.Items["User"] = authenticatedUser;
+        context.Items["UserId"] = userId;
       }
       catch
       {

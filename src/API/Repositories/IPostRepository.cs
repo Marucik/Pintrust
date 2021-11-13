@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using API.Domain;
@@ -8,5 +9,6 @@ namespace API.Repositories
   public interface IPostRepository : IRepository<Post>
   {
     Task<IEnumerable<Post>> GetAllAsync();
+    Task AddReaction(Guid postId, string reaction);
   }
 }

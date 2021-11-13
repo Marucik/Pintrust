@@ -11,6 +11,7 @@ namespace API.Domain
     public string Login { get; set; }
     public string Password { get; set; }
     public List<Guid> Favourites { get; set; }
+    public List<Reaction> Reactions { get; set; }
 
     public User(NewUserDto entity)
     {
@@ -18,6 +19,7 @@ namespace API.Domain
       Login = entity.Login;
       Password = BCrypt.Net.BCrypt.HashPassword(entity.Password);
       Favourites = new List<Guid>();
+      Reactions = new List<Reaction>();
     }
   }
 }

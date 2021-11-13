@@ -7,6 +7,7 @@ using API.Domain.Interfaces;
 using API.Helpers;
 using API.Repositories;
 using API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -35,6 +36,8 @@ namespace API
       services.AddCors();
       services.AddControllers();
       services.AddRouting(x => x.LowercaseUrls = true);
+      // services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+      //           .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options => Configuration.Bind("JwtSettings", options));
       services.AddSwaggerGen(c =>
       {
         c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
@@ -62,13 +65,12 @@ namespace API
       });
 
       app.UseRouting();
-
       app.UseCors(x => x
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
                 .AllowAnyHeader());
 
-      app.UseAuthorization();
+      // app.UseAuthorization();
 
       app.UseMiddleware<JwtMiddleware>();
 

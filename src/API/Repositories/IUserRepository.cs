@@ -10,5 +10,6 @@ namespace API.Repositories
     Task<User> GetByLogin(string login);
     Task<User> GetById(Guid id);
     Task AddFavourite(User user, Guid postId);
+    Task AddReaction(User user, Guid postId, string reaction);
   }
 }
