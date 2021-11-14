@@ -7,6 +7,7 @@ using API.Domain.Interfaces;
 using API.Dto;
 using API.Extensions;
 using API.Repositories;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -20,12 +21,14 @@ namespace API.Controllers
         private readonly ILogger<PostController> _logger;
         private readonly IPostRepository _postRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public PostController(ILogger<PostController> logger, IPostRepository postRepository, IUserRepository userRepository)
+        public PostController(ILogger<PostController> logger, IPostRepository postRepository, IUserRepository userRepository, IWebHostEnvironment webHostEnvironment)
         {
             _logger = logger;
             _postRepository = postRepository;
             _userRepository = userRepository;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
@@ -45,7 +48,7 @@ namespace API.Controllers
 
                 var user = await _userRepository.GetById(Guid.Parse(userId));
 
-                var imageUrl = await image.SaveFileAndGetUrl();
+                var imageUrl = await image.SaveFileAndGetUrl(_webHostEnvironment);
                 var post = new Post(entity, imageUrl, user);
                 await _postRepository.InsertAsync(post);
             }
