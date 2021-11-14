@@ -15,11 +15,11 @@ namespace API.Domain
     public int Likes { get; set; }
     public int Dislikes { get; set; }
     public string ImageUrl { get; set; }
-    public IUser Author { get; set; }
+    public UserDto Author { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 
-    public Post(NewPostDto entity, string imageUrl)
+    public Post(NewPostDto entity, string imageUrl, User user)
     {
       Id = new Guid();
       Title = entity.Title;
@@ -27,7 +27,7 @@ namespace API.Domain
       Likes = 0;
       Dislikes = 0;
       ImageUrl = imageUrl;
-      Author = new User();
+      Author = new UserDto(user);
       CreatedAt = UpdatedAt = DateTime.Now;
     }
 

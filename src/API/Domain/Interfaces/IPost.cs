@@ -1,4 +1,5 @@
 using System;
+using API.Dto;
 
 namespace API.Domain.Interfaces
 {
@@ -10,6 +11,6 @@ namespace API.Domain.Interfaces
     int Likes { get; set; }
     int Dislikes { get; set; }
     string ImageUrl { get; set; }
-    IUser Author { get; set; }
+    UserDto Author { get; set; }
   }
 }

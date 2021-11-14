@@ -40,6 +40,7 @@ namespace API.Repositories
       });
 
       services.AddSingleton<IPostRepository, PostRepository>();
+      services.AddSingleton<IUserRepository, UserRepository>();
     }
   }
 }
